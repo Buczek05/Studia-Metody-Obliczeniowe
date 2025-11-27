@@ -1,0 +1,34 @@
+# Pliki wykonywalne
+runge
+algos
+
+# Pliki obiektowe i kompilacji
+*.o
+*.obj
+*.out
+*.exe
+
+# Pliki CSV (wyniki)
+*.csv
+
+# Pliki graficzne (wykresy)
+*.png
+*.jpg
+*.pdf
+
+# Pliki tymczasowe
+*~
+*.swp
+*.swo
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/

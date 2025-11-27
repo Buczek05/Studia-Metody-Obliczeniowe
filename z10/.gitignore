@@ -1,0 +1,26 @@
+# Pliki binarne
+ode_solver
+*.exe
+*.out
+
+# Pliki wynikowe
+*.csv
+
+# Wykresy
+*.png
+*.pdf
+
+# Pliki tymczasowe C++
+*.o
+*.obj
+*.dSYM/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+
+# System
+.DS_Store
+Thumbs.db

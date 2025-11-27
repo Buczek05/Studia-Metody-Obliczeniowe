@@ -1,0 +1,22 @@
+# Pliki wykonywalne
+thomas
+example_solver
+least_squares
+
+# Pliki obiektowe
+*.o
+*.obj
+
+# Pliki tymczasowe
+*.tmp
+*.swp
+*~
+
+# Pliki IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Pliki systemowe
+.DS_Store
+Thumbs.db

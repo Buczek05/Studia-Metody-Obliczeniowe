@@ -1,0 +1,32 @@
+# Pliki wykonywalne
+main
+generate_exact
+analyze
+
+# Pliki obiektowe
+*.o
+*.obj
+
+# Pliki wynikowe (generowane przez programy)
+results_*.txt
+exact_values.txt
+
+# Wykresy
+*.png
+*.pdf
+*.eps
+
+# Pliki tymczasowe
+*~
+*.swp
+*.swo
+.DS_Store
+
+# Pliki IDE
+.vscode/
+.idea/
+*.iml
+
+# Pliki kompilacji
+*.out
+a.out

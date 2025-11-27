@@ -1,0 +1,20 @@
+# Pliki wykonywalne
+lu_decomposition
+epsilon_test
+zadania_test
+zadanie3
+
+# Pliki obiektowe
+*.o
+*.obj
+
+# Pliki IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Pliki tymczasowe
+*.tmp
+*.log

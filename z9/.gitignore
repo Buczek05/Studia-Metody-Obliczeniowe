@@ -1,0 +1,29 @@
+# Skompilowane pliki
+main
+thomas_demo
+*.o
+*.exe
+*.out
+
+# Pliki wynikowe
+*.csv
+*.png
+*.jpg
+*.pdf
+
+# Pliki tymczasowe
+*~
+.DS_Store
+*.swp
+*.swo
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/

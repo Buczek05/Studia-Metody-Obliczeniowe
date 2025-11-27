@@ -1,0 +1,25 @@
+# Pliki wykonywalne
+finite_differences
+analiza
+
+# Pliki danych
+*.dat
+
+# Wykresy
+*.png
+*.pdf
+*.eps
+
+# Pliki obiektowe
+*.o
+*.obj
+
+# Pliki tymczasowe
+*~
+*.swp
+*.swo
+.DS_Store
+
+# Pliki debugowania
+*.dSYM/
+*.out

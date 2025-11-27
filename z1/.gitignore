@@ -1,0 +1,24 @@
+# Skompilowane pliki binarne
+bin/*
+!bin/.gitkeep
+
+# Pliki obiektowe
+*.o
+*.obj
+
+# Pliki wykonywalne
+*.exe
+*.out
+
+# Pliki tymczasowe
+*.tmp
+*.swp
+*~
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# macOS
+.DS_Store

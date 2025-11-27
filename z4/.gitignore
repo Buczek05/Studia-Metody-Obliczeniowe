@@ -1,0 +1,20 @@
+# Skompilowane pliki binarne
+newton_method
+experiments
+
+# Pliki obiektowe
+*.o
+*.obj
+
+# Pliki tymczasowe
+*.tmp
+*.swp
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# macOS
+.DS_Store

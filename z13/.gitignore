@@ -1,0 +1,29 @@
+# Pliki wykonywalne
+erf_quadratures
+examples
+
+# Pliki danych wygenerowane przez programy
+*.txt
+*.dat
+
+# Skrypty gnuplot wygenerowane automatycznie
+plot_errors.gp
+
+# Wykresy
+*.png
+*.pdf
+*.eps
+
+# Logi z dopasowania gnuplot
+fit.log
+
+# Pliki tymczasowe
+*~
+.*.swp
+*.o
+*.obj
+
+# Pliki IDE
+.vscode/
+.idea/
+*.code-workspace
