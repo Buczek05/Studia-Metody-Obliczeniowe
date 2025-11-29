@@ -6,54 +6,105 @@
 Oszacuj wielkość błędu obcięcia przy wyznaczaniu przybliżonej wartości `ln(z)` poprzez sumowanie `n` wyrazów rozwinięcia w szereg Taylora wokół `z₀ = 1`. Ile wyrazów należy zsumować, aby otrzymać błąd bezwzględny logarytmu nie większy niż `10⁻⁸` dla `z = 2`?
 
 ### Rozwiązanie
+# Oszacowanie błędu obcięcia szeregu Taylora dla ln(z)
 
-#### Szereg Taylora dla ln(z) wokół z₀ = 1
+## Rozwinięcie Taylora logarytmu
 
-Rozwinięcie funkcji `ln(z)` w szereg Taylora wokół punktu `z₀ = 1`:
+Zapisujemy:
 
-$$\ln(z) = \ln(1) + \sum_{k=1}^{\infty} \frac{(-1)^{k+1}}{k}(z-1)^k$$
+$$z = 1 + x \qquad \Rightarrow \qquad x = z - 1.$$
 
-Ponieważ `ln(1) = 0`, otrzymujemy:
+Rozwinięcie:
 
-$$\ln(z) = \sum_{k=1}^{\infty} \frac{(-1)^{k+1}}{k}(z-1)^k = (z-1) - \frac{(z-1)^2}{2} + \frac{(z-1)^3}{3} - \frac{(z-1)^4}{4} + \ldots$$
+$$\ln(1+x) = x - \frac{x^2}{2} + \frac{x^3}{3} - \frac{x^4}{4} + \dots$$
 
-Szereg ten jest zbieżny dla `z ∈ (0, 2]`.
+Ogólnie:
 
-#### Przybliżenie n-wyrazowe
+$$
+\ln(z) = \sum_{k=1}^{\infty} (-1)^{k+1}\frac{(z-1)^k}{k}.
+$$
 
-Przybliżając `ln(z)` sumą pierwszych `n` wyrazów:
+---
 
-$$S_n(z) = \sum_{k=1}^{n} \frac{(-1)^{k+1}}{k}(z-1)^k$$
+## Przypadek szczególny: $z = 2$
 
-#### Oszacowanie błędu obcięcia
+Wtedy:
 
-Błąd obcięcia (błąd bezwzględny) wynosi:
+$$x = 2 - 1 = 1.$$
 
-$$E_n(z) = \left| \ln(z) - S_n(z) \right| = \left| \sum_{k=n+1}^{\infty} \frac{(-1)^{k+1}}{k}(z-1)^k \right|$$
+Podstawiamy:
 
-Dla szeregu naprzemiennego spełniającego warunki twierdzenia Leibniza, błąd jest ograniczony przez pierwszy pominięty wyraz:
+$$
+\ln 2 = 1 - \frac{1}{2} + \frac{1}{3} - \frac{1}{4} + \dots
+$$
 
-$$E_n(z) \leq \left| \frac{(-1)^{n+2}}{n+1}(z-1)^{n+1} \right| = \frac{|z-1|^{n+1}}{n+1}$$
+Suma n wyrazów:
 
-#### Obliczenia dla z = 2
+$$
+S_n = \sum_{k=1}^{n} (-1)^{k+1}\frac{1}{k}.
+$$
 
-Dla `z = 2` mamy `z - 1 = 1`, zatem:
+---
 
-$$E_n(2) \leq \frac{1^{n+1}}{n+1} = \frac{1}{n+1}$$
+## Błąd obcięcia — kryterium Leibniza
 
-Szukamy najmniejszego `n` takiego, że:
+Wyrazy szeregu:
 
-$$\frac{1}{n+1} \leq 10^{-8}$$
+$$a_k = \frac{1}{k}.$$
 
-$$n+1 \geq 10^8$$
+Dla szeregu naprzemiennego:
 
-$$n \geq 10^8 - 1 = 99\,999\,999$$
+$$|R_n| \le a_{n+1}.$$
 
-### Odpowiedź
+Czyli:
 
-**Należy zsumować co najmniej `n = 99 999 999` wyrazów szeregu**, aby błąd bezwzględny był nie większy niż `10⁻⁸` dla `z = 2`.
+$$|R_n| \le \frac{1}{n+1}.$$
 
-**Uwaga:** To pokazuje, że rozwinięcie Taylora wokół `z₀ = 1` nie jest efektywną metodą obliczania `ln(2)`. W praktyce stosuje się inne metody, np. rozwinięcie wokół innego punktu lub wykorzystanie tożsamości logarytmicznych.
+---
+
+## Warunek na dokładność $10^{-8}$
+
+Chcemy:
+
+$$|R_n| \le 10^{-8}.$$
+
+Wystarczy:
+
+$$
+\frac{1}{n+1} \le 10^{-8}.
+$$
+
+Odwracamy nierówność:
+
+$$
+n + 1 \ge 10^8.
+$$
+
+Zatem:
+
+$$
+n \ge 10^8 - 1.
+$$
+
+---
+
+## Odpowiedź końcowa
+
+Aby błąd bezwzględny przybliżenia $\ln 2$ był nie większy niż  
+$10^{-8}$, należy zsumować co najmniej:
+
+$$
+n = 99\,999\,999.
+$$
+
+co odpowiada w przybliżeniu:
+
+$$
+10^8\ \text{wyrazów}.
+$$
+
+Szereg jest bardzo wolno zbieżny i niepraktyczny dla obliczeń
+wysokiej precyzji dla $\ln 2$.
 
 ---
 
@@ -67,131 +118,180 @@ $$\text{rd}(x) = (-1)^e \cdot m \cdot 2^{z-b}$$
 gdzie na mantysę oraz cechę przeznaczono po dwa bity (razem 5 bitów: 1 bit znaku + 2 bity cechy + 2 bity mantysy). Wyznacz zbiór wszystkich możliwych liczb rzeczywistych reprezentowalnych w tym systemie przy założeniu, że `b = 1`. Uwzględnij możliwość liczb znormalizowanych (`m ∈ [1, 2)`) oraz zdenormalizowanych, i określ jakie słowa maszynowe należałoby zarezerwować na `+0`, `-0`, `+INF`, `-INF` oraz reprezentacje `NaN`.
 
 ### Rozwiązanie
+# Prosty system reprezentacji zmiennoprzecinkowej (5 bitów)
 
-#### Format słowa maszynowego (5 bitów)
+Rozważamy system:
 
-```
-[s][ee][mm]
-```
-- `s` - bit znaku (1 bit): 0 = dodatnia, 1 = ujemna
-- `ee` - cecha (2 bity): wartość z ∈ {0, 1, 2, 3}
-- `mm` - mantysa (2 bity)
+$$rd(x) = (-1)^e \, m \, 2^{z-b}$$
 
-#### Parametry systemu
+gdzie:
+- $e$ – bit znaku (0 – plus, 1 – minus),
+- $m$ – mantysa,
+- $z$ – cecha (wykładnik z przesunięciem),
+- $b = 1$ – bias.
 
-- Bias: `b = 1`
-- Cecha rzeczywista: `E = z - b = z - 1`
-- Zakres cechy: `E ∈ {-1, 0, 1, 2}` dla `z ∈ {0, 1, 2, 3}`
+Założenia:
+- jedno słowo maszynowe ma 5 bitów,
+- na mantysę i na cechę przeznaczono po 2 bity,
+- rozważamy liczby znormalizowane ($m \in [1,2)$) oraz zdenormalizowane,
+- mamy też specjalne reprezentacje $+0$, $-0$, $+\infty$, $-\infty$ oraz NaN.
 
-#### Konwencje IEEE 754 (zaadaptowane do 5-bitowego systemu)
+---
 
-**Wartości specjalne:**
-- `z = 0` (cecha `00`): zero lub liczby zdenormalizowane
-- `z = 3` (cecha `11`): nieskończoności i NaN
+## Struktura słowa
 
-**Liczby znormalizowane:**
-- `z ∈ {1, 2}` (cechy `01`, `10`)
-- Mantysa: `m = 1.mm₂` (niejawna jedynka), czyli `m ∈ {1.00, 1.01, 1.10, 1.11}₂ = {1.0, 1.25, 1.5, 1.75}₁₀`
+Słowo ma postać:
 
-**Liczby zdenormalizowane:**
-- `z = 0` (cecha `00`), `mm ≠ 00`
-- Mantysa: `m = 0.mm₂` (bez niejawnej jedynki)
-- Cecha rzeczywista: `E = -0` (aby uniknąć dodatkowego przesunięcia)
+$$[e]\,[z_1 z_0]\,[m_1 m_0]$$
 
-#### Rezerwacja słów maszynowych dla wartości specjalnych
+- 1 bit na znak $e$,
+- 2 bity na cechę $z$ (wartości $0,1,2,3$),
+- 2 bity na mantysę.
 
-| Wartość | Format | Bity |
-|---------|--------|------|
-| **+0** | `s=0, z=00, m=00` | `0 00 00` |
-| **-0** | `s=1, z=00, m=00` | `1 00 00` |
-| **+INF** | `s=0, z=11, m=00` | `0 11 00` |
-| **-INF** | `s=1, z=11, m=00` | `1 11 00` |
-| **NaN** | `s=*, z=11, m≠00` | `* 11 01`, `* 11 10`, `* 11 11` |
+---
 
-#### Liczby zdenormalizowane (z = 0, mm ≠ 00)
+## Wartości cechy
 
-Dla `z = 0`, `E = -0 = 0` (specjalnie: używamy `E = 1 - b = 0` dla zdenormalizowanych):
+Zależność:
 
-Wartość: $(-1)^s \cdot 0.mm_2 \cdot 2^{1-b} = (-1)^s \cdot 0.mm_2 \cdot 2^0 = (-1)^s \cdot 0.mm_2$
+$$E = z - b = z - 1.$$
 
-| s | z | mm | Mantysa (dziesiętnie) | Wartość dziesiętna |
-|---|---|----|-----------------------|--------------------|
-| 0 | 00 | 01 | 0.25 | +0.25 |
-| 0 | 00 | 10 | 0.50 | +0.50 |
-| 0 | 00 | 11 | 0.75 | +0.75 |
-| 1 | 00 | 01 | 0.25 | -0.25 |
-| 1 | 00 | 10 | 0.50 | -0.50 |
-| 1 | 00 | 11 | 0.75 | -0.75 |
+Zatem:
 
-#### Liczby znormalizowane (z = 1)
+- $z = 0 \Rightarrow E = -1$,
+- $z = 1 \Rightarrow E = 0$,
+- $z = 2 \Rightarrow E = 1$,
+- $z = 3 \Rightarrow E = 2$.
 
-Dla `z = 1`, `E = 1 - 1 = 0`:
+Przydział:
+- $z = 00$ – liczby zdenormalizowane i zera,
+- $z = 01, 10$ – liczby znormalizowane,
+- $z = 11$ – $\pm\infty$ oraz NaN.
 
-Wartość: $(-1)^s \cdot 1.mm_2 \cdot 2^0 = (-1)^s \cdot 1.mm_2$
+---
 
-| s | z | mm | Mantysa (dziesiętnie) | Wartość dziesiętna |
-|---|---|----|-----------------------|--------------------|
-| 0 | 01 | 00 | 1.00 | +1.00 |
-| 0 | 01 | 01 | 1.25 | +1.25 |
-| 0 | 01 | 10 | 1.50 | +1.50 |
-| 0 | 01 | 11 | 1.75 | +1.75 |
-| 1 | 01 | 00 | 1.00 | -1.00 |
-| 1 | 01 | 01 | 1.25 | -1.25 |
-| 1 | 01 | 10 | 1.50 | -1.50 |
-| 1 | 01 | 11 | 1.75 | -1.75 |
+## Mantysa
 
-#### Liczby znormalizowane (z = 2)
+Na mantysę mamy 2 bity. Ułamkowa część ma krok $2^{-2} = \tfrac14$.
 
-Dla `z = 2`, `E = 2 - 1 = 1`:
+### Liczby znormalizowane
 
-Wartość: $(-1)^s \cdot 1.mm_2 \cdot 2^1 = (-1)^s \cdot 1.mm_2 \cdot 2$
+Mantysa:
 
-| s | z | mm | Mantysa (dziesiętnie) | Wartość dziesiętna |
-|---|---|----|-----------------------|--------------------|
-| 0 | 10 | 00 | 1.00 | +2.00 |
-| 0 | 10 | 01 | 1.25 | +2.50 |
-| 0 | 10 | 10 | 1.50 | +3.00 |
-| 0 | 10 | 11 | 1.75 | +3.50 |
-| 1 | 10 | 00 | 1.00 | -2.00 |
-| 1 | 10 | 01 | 1.25 | -2.50 |
-| 1 | 10 | 10 | 1.50 | -3.00 |
-| 1 | 10 | 11 | 1.75 | -3.50 |
+$$m = 1.f_2 = 1 + \frac{m_1}{2} + \frac{m_0}{4}, \quad m \in [1,2).$$
 
-#### Wartości specjalne (z = 3)
+Możliwe wartości:
 
-| s | z | mm | Wartość |
-|---|---|----|---------|
-| 0 | 11 | 00 | +INF |
-| 1 | 11 | 00 | -INF |
-| 0/1 | 11 | 01 | NaN |
-| 0/1 | 11 | 10 | NaN |
-| 0/1 | 11 | 11 | NaN |
+- $m_1 m_0 = 00 \Rightarrow m = 1{,}00_2 = 1$
+- $01 \Rightarrow m = 1{,}01_2 = 1{,}25$
+- $10 \Rightarrow m = 1{,}10_2 = 1{,}5$
+- $11 \Rightarrow m = 1{,}11_2 = 1{,}75$
 
-### Podsumowanie: Pełny zbiór reprezentowalnych liczb
+### Liczby zdenormalizowane
 
-#### Liczby dodatnie (uporządkowane):
-```
-+0.00, +0.25, +0.50, +0.75, +1.00, +1.25, +1.50, +1.75,
-+2.00, +2.50, +3.00, +3.50, +INF
-```
+Mantysa:
 
-#### Liczby ujemne (uporządkowane):
-```
--INF, -3.50, -3.00, -2.50, -2.00, -1.75, -1.50, -1.25,
--1.00, -0.75, -0.50, -0.25, -0.00
-```
+$$m = 0.f_2 = \frac{m_1}{2} + \frac{m_0}{4}, \quad m \in [0,1).$$
 
-#### Wartości specjalne:
-```
-+0, -0, +INF, -INF, NaN (6 różnych reprezentacji)
-```
+Możliwe wartości:
 
-### Uwagi
+- $00 \Rightarrow m = 0$
+- $01 \Rightarrow m = 0{,}25$
+- $10 \Rightarrow m = 0{,}5$
+- $11 \Rightarrow m = 0{,}75$
 
-1. **Luka między liczbami zdenormalizowanymi a znormalizowanymi:** Największa liczba zdenormalizowana to 0.75, najmniejsza znormalizowana to 1.00. Jest płynne przejście dzięki zdenormalizowanym.
+---
 
-2. **Precyzja:** Z tylko 2 bitami mantysy, precyzja jest bardzo niska.
+## Liczby znormalizowane
 
-3. **Zakres:** Najmniejsza liczba dodatnia różna od zera: 0.25, największa: 3.50.
+### Przypadek $z = 01$ (czyli $z=1$, $E = 0$)
 
-4. **Epsylon maszynowy:** Dla tego systemu, epsylon maszynowy (najmniejsze ε takie, że `1 + ε > 1`) to 0.25, ponieważ następna reprezentowalna liczba po 1.00 to 1.25.
+Mamy:
+
+$$x = (-1)^e \, m \, 2^0 = (-1)^e m.$$
+
+Dla $e = 0$ (plus):
+
+- $+1,\ +1{,}25,\ +1{,}5,\ +1{,}75$
+
+Dla $e = 1$ (minus):
+
+- $-1,\ -1{,}25,\ -1{,}5,\ -1{,}75$
+
+### Przypadek $z = 10$ (czyli $z=2$, $E = 1$)
+
+Mamy:
+
+$$x = (-1)^e \, m \, 2^1 = (-1)^e \cdot 2m.$$
+
+Dla $e = 0$:
+
+- $+2,\ +2{,}5,\ +3,\ +3{,}5$
+
+Dla $e = 1$:
+
+- $-2,\ -2{,}5,\ -3,\ -3{,}5$
+
+Łącznie: **16 znormalizowanych niezerowych liczb**.
+
+---
+
+## Liczby zdenormalizowane i zera ($z = 00$)
+
+Dla $z = 00$:
+
+- $m = 0$ – zera,
+- $m > 0$ – liczby zdenormalizowane.
+
+Przyjmujemy efektywny wykładnik $E_{\min} = 0$, więc:
+
+$$x = (-1)^e \, m \, 2^0 = (-1)^e m.$$
+
+### Zera
+
+- $e = 0$, $z=00$, $m=00$ → **$+0$**
+- $e = 1$, $z=00$, $m=00$ → **$-0$**
+
+### Zdenormalizowane dodatnie ($e=0$)
+
+- $+0{,}25,\ +0{,}5,\ +0{,}75$
+
+### Zdenormalizowane ujemne ($e=1$)
+
+- $-0{,}25,\ -0{,}5,\ -0{,}75$
+
+---
+
+## Nieskończoności i NaN ($z = 11$)
+
+Dla $z = 11$:
+
+- mantysa $m = 0$ – nieskończoności,
+- mantysa $m \ne 0$ – NaN.
+
+Słowa:
+
+- $e = 0$, $z=11$, $m=00$ → **$+\infty$**
+- $e = 1$, $z=11$, $m=00$ → **$-\infty$**
+
+Każde słowo z:
+
+- $z = 11$ i $m \ne 00$
+
+reprezentuje **NaN** (6 różnych słów maszynowych).
+
+---
+
+## Podsumowanie liczby słów
+
+- liczby znormalizowane: 16,
+- zdenormalizowane: 6,
+- zera: 2 ($+0$, $-0$),
+- nieskończoności: 2 ($+\infty$, $-\infty$),
+- NaN: 6.
+
+Razem:
+
+$$16 + 6 + 2 + 2 + 6 = 32 = 2^5,$$
+
+czyli wszystkie możliwe słowa 5-bitowe są wykorzystane.

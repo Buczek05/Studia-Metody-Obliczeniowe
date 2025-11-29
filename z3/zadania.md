@@ -10,62 +10,85 @@
 ## Zadania
 
 ### Zadanie 1: Ocena zbieżności metody iteracyjnej Picarda
+## Ocena zbieżności metody Picarda
 
-Oceń zbieżność metody iteracyjnej Picarda w zastosowaniu do równań nieliniowych:
+Metoda Picarda ma postać
+$$
+x_{k+1} = \varphi(x_k),
+$$
+a zbieżność na przedziale \(I\) zapewnia warunek:
+- \(\varphi(I)\subset I\),
+- istnieje \(q<1\) takie, że \(|\varphi'(x)|\le q\) dla wszystkich \(x\in I\).
 
-**a)** $\sinh(x) + \frac{x}{4} - 1 = 0$
+---
 
-**b)** $\tanh(x) + 2(x - 1) = 0$
+### a) Równanie $\tanh(x)+2(x-1)=0$
 
-#### Metoda Picarda - przypomnienie
+Przekształcamy równanie:
+$$
+\tanh(x) + 2(x-1)=0
+\iff \tanh(x)=2(1-x)
+\iff x = 1 - \frac{1}{2}\tanh(x).
+$$
 
-Metoda Picarda polega na przekształceniu równania $f(x) = 0$ do postaci $x = g(x)$ i iterowaniu według wzoru:
+Wybieramy
+$$
+\varphi(x)=1-\frac{1}{2}\tanh(x),
+\qquad
+x_{k+1} = 1 - \frac{1}{2}\tanh(x_k).
+$$
 
-$$x_{n+1} = g(x_n)$$
+Pochodna:
+$$
+\varphi'(x) = -\frac{1}{2}\operatorname{sech}^2(x),
+$$
+gdzie $0<\operatorname{sech}^2(x)\le 1$. Zatem
+$$
+|\varphi'(x)| = \frac{1}{2}\operatorname{sech}^2(x)\le \frac{1}{2}<1
+\quad\text{dla każdego }x\in\mathbb{R}.
+$$
 
-#### Warunek zbieżności
+Ponieważ $\tanh(x)\in(-1,1)$, to
+$$
+\varphi(x)=1-\frac{1}{2}\tanh(x)\in(0.5,1.5),
+$$
+czyli np. \(I=[0.5,1.5]\) jest niezmienniczy: $\varphi(I)\subset I$.
 
-Metoda Picarda jest zbieżna w otoczeniu pierwiastka $x^*$, jeśli:
+**Wniosek:** iteracja Picarda z tą $\varphi$ jest zbieżna (kontrakcja z $q\le \tfrac12$).
 
-$$|g'(x)| < 1$$
+---
 
-w tym otoczeniu.
+### b) Równanie $\sinh(x)+\frac{x}{4}-1=0$
 
-#### Rozwiązanie a) $\sinh(x) + \frac{x}{4} - 1 = 0$
+Przekształcamy:
+$$
+\sinh(x)+\frac{x}{4}-1=0
+\iff \sinh(x)=1-\frac{x}{4}
+\iff x = \operatorname{arsinh}\!\left(1-\frac{x}{4}\right).
+$$
 
-Możliwe przekształcenia do postaci $x = g(x)$:
+Wybieramy
+$$
+\varphi(x)=\operatorname{arsinh}\!\left(1-\frac{x}{4}\right),
+\qquad
+x_{k+1} = \operatorname{arsinh}\!\left(1-\frac{x_k}{4}\right).
+$$
 
-1. $x = 4(1 - \sinh(x))$
-   - Wtedy $g(x) = 4(1 - \sinh(x))$
-   - $g'(x) = -4\cosh(x)$
+Pochodna:
+$$
+\varphi'(x)
+= -\frac{1}{4\sqrt{1+\left(1-\frac{x}{4}\right)^2}}.
+$$
 
-2. $x = \sinh^{-1}(1 - \frac{x}{4})$ (o ile $1 - \frac{x}{4} > 0$)
-   - Wtedy $g(x) = \sinh^{-1}(1 - \frac{x}{4})$
-   - $g'(x) = \frac{-1/4}{\sqrt{1 + (1 - x/4)^2}}$
+Stąd
+$$
+|\varphi'(x)|
+= \frac{1}{4\sqrt{1+\left(1-\frac{x}{4}\right)^2}}
+\le \frac{1}{4}<1
+\quad\text{dla każdego }x.
+$$
 
-**Analiza zbieżności:**
-
-Dla pierwszego przekształcenia: $|g'(x)| = 4|\cosh(x)| \geq 4 > 1$ dla każdego $x$, więc metoda **nie jest zbieżna**.
-
-Dla drugiego przekształcenia: $|g'(x)| = \frac{1}{4\sqrt{1 + (1 - x/4)^2}} < \frac{1}{4} < 1$ w otoczeniu pierwiastka, więc metoda **jest zbieżna**.
-
-#### Rozwiązanie b) $\tanh(x) + 2(x - 1) = 0$
-
-Możliwe przekształcenia:
-
-1. $x = 1 - \frac{\tanh(x)}{2}$
-   - Wtedy $g(x) = 1 - \frac{\tanh(x)}{2}$
-   - $g'(x) = -\frac{1}{2\cosh^2(x)}$
-
-2. $x = \tanh^{-1}(2 - 2x)$ (o ile $|2 - 2x| < 1$)
-   - Wtedy $g(x) = \tanh^{-1}(2 - 2x)$
-   - $g'(x) = \frac{-2}{1 - (2 - 2x)^2}$
-
-**Analiza zbieżności:**
-
-Dla pierwszego przekształcenia: $|g'(x)| = \frac{1}{2\cosh^2(x)} \leq \frac{1}{2} < 1$ dla każdego $x$, więc metoda **jest zbieżna**.
-
-Dla drugiego przekształcenia: warunek zbieżności zależy od punktu startowego i pierwiastka.
+**Wniosek:** iteracja Picarda dla tej postaci jest również zbieżna (kontrakcja z $q\le \tfrac14$).
 
 ---
 

@@ -161,74 +161,91 @@ $$= \left| \frac{-x}{1+x} \right| = \frac{|x|}{|1+x|}$$
 
 Dla $x = 1 + t$ gdzie $t$ jest małe ($t = 10^{-15}, 10^{-12}, 10^{-10}$), obliczenie $\ln(x)$ może być problematyczne.
 
-### Analiza błędu reprezentacji
+## Uwarunkowanie i błąd względny obliczenia wartości funkcji \(f(x)=\ln(x)\)
 
-Liczba $x = 1 + t$ musi być najpierw zaokrąglona do formatu zmiennoprzecinkowego:
+Względny wskaźnik uwarunkowania definiujemy jako:
 
-$$\tilde{x} = \text{rd}(1 + t) = (1 + t)(1 + \varepsilon), \quad |\varepsilon| \leq \varepsilon_{\text{mach}}$$
+$$
+\kappa(x)=\left|\frac{x f'(x)}{f(x)}\right|.
+$$
 
-Dla małych $t$ ($t < \varepsilon_{\text{mach}}$) może zajść:
+Dla funkcji \( f(x)=\ln(x) \) mamy:
 
-$$\tilde{x} = 1$$
+$$
+f'(x)=\frac{1}{x}.
+$$
 
-co prowadzi do $\ln(\tilde{x}) = \ln(1) = 0$ zamiast $\ln(1+t) \approx t$.
+Zatem:
 
-### Rozwinięcie Taylora
+$$
+\kappa(x)=\left|\frac{x\cdot \frac{1}{x}}{\ln(x)}\right|
+=\frac{1}{|\ln(x)|}.
+$$
 
-$$\ln(1+t) = t - \frac{t^2}{2} + \frac{t^3}{3} - \frac{t^4}{4} + \ldots$$
+Zakładając względny błąd reprezentacji danych \(|\delta|\le u\)
+(typowo \(u \approx 10^{-16}\) w podwójnej precyzji), względny błąd wyniku spełnia:
 
-Dla małych $t$: $\ln(1+t) \approx t$
+$$
+\left|\frac{\Delta f}{f}\right|
+\lesssim \kappa(x)\,u
+= \frac{u}{|\ln(x)|}.
+$$
 
-### Obliczenia numeryczne
+---
 
-#### Przypadek 1: $x = 1 + 10^{-15}$
+## Ocena błędu względnego dla zadanych wartości
 
-- Wartość dokładna: $\ln(1 + 10^{-15}) \approx 10^{-15}$
-- Problem: $10^{-15} < \varepsilon_{\text{mach}} \approx 2.22 \times 10^{-16}$ (NIE - jest większe!)
-- Ale odejmowanie $1$ może prowadzić do utraty cyfr znaczących
+### 1. \(x = 1 + 10^{-15}\)
 
-**Test w C++:**
-```cpp
-double x = 1.0 + 1e-15;
-double y1 = log(x);        // Może być nieprecyzyjne
-double y2 = log1p(1e-15);  // Precyzyjne! (log1p oblicza ln(1+t))
-```
+$$
+\ln(1+10^{-15}) \approx 10^{-15},
+\qquad
+\kappa(x) \approx 10^{15},
+$$
 
-#### Przypadek 2: $x = 1 + 10^{-12}$
+$$
+\left|\frac{\Delta f}{f}\right|
+\lesssim 10^{15}\cdot 10^{-16}
+= 10^{-1}.
+$$
 
-- Wartość dokładna: $\ln(1 + 10^{-12}) \approx 10^{-12}$
-- Błąd względny przy użyciu `log()`:
-  $$\delta \approx \frac{\varepsilon_{\text{mach}}}{10^{-12}} \approx \frac{2.22 \times 10^{-16}}{10^{-12}} = 2.22 \times 10^{-4}$$
+Błąd względny: **≈ \(10^{-1}\)**.
 
-#### Przypadek 3: $x = 1 + 10^{-10}$
+---
 
-- Wartość dokładna: $\ln(1 + 10^{-10}) \approx 10^{-10}$
-- Funkcja standardowa `log()` powinna działać poprawnie
+### 2. \(x = 1 + 10^{-12}\)
 
-### Rozwiązanie: Funkcja log1p
+$$
+\ln(1+10^{-12}) \approx 10^{-12},
+\qquad
+\kappa(x) \approx 10^{12},
+$$
 
-Biblioteka standardowa C++ oferuje funkcję `log1p(t)`, która oblicza $\ln(1+t)$ z wysoką precyzją dla małych $t$:
+$$
+\left|\frac{\Delta f}{f}\right|
+\lesssim 10^{12}\cdot 10^{-16}
+= 10^{-4}.
+$$
 
-```cpp
-#include <cmath>
+Błąd względny: **≈ \(10^{-4}\)**.
 
-double t = 1e-15;
-double exact = log1p(t);  // Precyzyjne obliczenie ln(1+t)
-```
+---
 
-### Tabela wyników
+### 3. \(x = 1 + 10^{-10}\)
 
-| $t$ | $\ln(1+t)$ (dokładnie) | `log(1+t)` (błąd) | `log1p(t)` (precyzja) |
-|-----|------------------------|-------------------|----------------------|
-| $10^{-15}$ | $10^{-15}$ | ~100% | ~$\varepsilon_{\text{mach}}$ |
-| $10^{-12}$ | $10^{-12}$ | ~0.01% | ~$\varepsilon_{\text{mach}}$ |
-| $10^{-10}$ | $10^{-10}$ | ~$10^{-6}$ | ~$\varepsilon_{\text{mach}}$ |
+$$
+\ln(1+10^{-10}) \approx 10^{-10},
+\qquad
+\kappa(x) \approx 10^{10},
+$$
 
-### Wnioski
+$$
+\left|\frac{\Delta f}{f}\right|
+\lesssim 10^{10}\cdot 10^{-16}
+= 10^{-6}.
+$$
 
-1. ✅ Zawsze używaj `log1p(t)` dla obliczenia $\ln(1+t)$ gdy $|t| < 0.01$
-2. ⚠️ Unikaj obliczenia `log(1 + t)` bezpośrednio dla małych $t$
-3. 📊 Błąd względny może być **bardzo duży** (nawet 100%) dla $t < \varepsilon_{\text{mach}}$
+Błąd względny: **≈ \(10^{-6}\)**.
 
 ---
 
@@ -268,15 +285,3 @@ double exact = log1p(t);  // Precyzyjne obliczenie ln(1+t)
 - Brak testów numerycznych
 
 ---
-
-## Zadania dodatkowe
-
-1. Zbadaj uwarunkowanie funkcji $g(x) = \sqrt{x^2 + 1} - 1$ dla małych $x$.
-
-   **Wskazówka:** Pomnóż i podziel przez $\sqrt{x^2 + 1} + 1$.
-
-2. Zaproponuj stabilny algorytm obliczania $e^x - 1$ dla małych $x$.
-
-   **Wskazówka:** Użyj szeregu Taylora lub funkcji `expm1()`.
-
-3. Porównaj dokładność obliczeń dla typu `float` vs `double` vs `long double`.
