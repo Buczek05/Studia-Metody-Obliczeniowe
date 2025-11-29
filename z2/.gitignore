@@ -9,7 +9,7 @@ analyze
 
 # Pliki wynikowe (generowane przez programy)
 results_*.txt
-exact_values.txt
+values.txt
 
 # Wykresy
 *.png
