@@ -3,12 +3,17 @@
 #include <limits>
 #include <cmath>
 
+template<typename T>
+T dodaj_epsylon(T liczba, T epsilon) {
+    return liczba + epsilon / T(2.0);
+}
+
 // Wyznaczanie epsylona maszynowego
 template<typename T>
 T oblicz_epsilon() {
     T epsilon = T(1.0);
     T jeden = T(1.0);
-    while (jeden + epsilon / T(2.0) > jeden) {
+    while (dodaj_epsylon(jeden, epsilon) > jeden) {
         epsilon /= T(2.0);
     }
     return epsilon;
