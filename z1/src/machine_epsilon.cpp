@@ -14,6 +14,7 @@ T oblicz_epsilon() {
     T epsilon = T(1.0);
     T jeden = T(1.0);
     while (dodaj_epsylon(jeden, epsilon) > jeden) {
+        std::cout << std::fixed << std::setprecision(130) << "Epsilon: " << epsilon << "\n";
         epsilon /= T(2.0);
     }
     return epsilon;
@@ -55,3 +56,6 @@ int main() {
     std::cout << "\n";
     return 0;
 }
+// FLOAT 2384185791015625 - 17
+// DOUBLE 444089209850062616169452667236328125 - 37
+// LONG DOUBLE 385185988877447170611195588516985463707620329643077639047987759113311767578125 - 79

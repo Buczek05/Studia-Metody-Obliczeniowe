@@ -10,11 +10,14 @@ double f_naiwna(double x) {
 }
 
 double f_taylor(double x) {
-    if (std::fabs(x) > 1.0) return f_naiwna(x);
+    if (std::fabs(x) > 0.50) return f_naiwna(x);
 
     double x2 = x * x;
     double x4 = x2 * x2;
-    return 1.0 / (1.0 + x2/20.0 + x4/840.0 + x4*x2/60480.0 + x4*x4/6652800.0);
+    double x6 = x4 * x2;
+    double x8 = x4 * x4;
+    double x10 = x4 * x4 * x2;
+    return 1.0 / (1.0 + x2/20.0 + x4/840.0 + x6/60480.0 + x8/6652800.0 + x10/1037836800);
 }
 
 int main() {

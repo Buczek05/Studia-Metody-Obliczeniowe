@@ -40,6 +40,10 @@ run: all
 
 
 
+# Czyszczenie
+clean:
+	rm -f $(TARGETS)
+
 # Pomoc
 help:
 	@echo "Dostępne cele:"
