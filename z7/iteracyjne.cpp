@@ -174,15 +174,13 @@ void solveIterative(const Matrix& A, const Vector& b, Vector x0,
     double error = tolerance + 1;
     double residuum = calculateResiduum(A, x_old, b);
 
-    while (iteration < maxIterations && error > tolerance && residuum > tolerance) {
-        // Wykonaj iterację w zależności od metody
+    while (iteration < maxIterations && (error > tolerance || residuum > tolerance)) {
         if (methodName.find("SOR") != string::npos) {
             x_new = sorIteration(A, b, x_old, omega);
         } else {
             x_new = iterationFunc(A, b, x_old);
         }
 
-        // Oblicz estymator błędu i residuum
         Vector diff = vectorSubtract(x_new, x_old);
         error = normEuclidean(diff);
         residuum = calculateResiduum(A, x_new, b);

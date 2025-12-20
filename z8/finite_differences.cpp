@@ -1,301 +1,299 @@
+/*
+TEORIA MATEMATYCZNA:
+
+1. IDEA PRZYBLIZEN ROZNICOWYCH
+   Pochodna jest zdefiniowana jako granica:
+   f'(x) = lim[h→0] (f(x+h) - f(x)) / h
+
+   W obliczeniach numerycznych nie mozemy wziac h=0, wiec uzywamy
+   malego, ale skonczonego h. Roznica miedzy wartoscia dokladna
+   a przyblizona to BLAD OBCIECIA (truncation error).
+
+2. WYPROWADZENIE WZOROW - SZEREG TAYLORA
+   Rozwijamy f(x+h) i f(x-h) w szereg Taylora wokol x:
+
+   f(x+h) = f(x) + h*f'(x) + (h²/2!)*f''(x) + (h³/3!)*f'''(x) + O(h⁴)
+   f(x-h) = f(x) - h*f'(x) + (h²/2!)*f''(x) - (h³/3!)*f'''(x) + O(h⁴)
+
+3. PRZYBLIZENIA DWUPUNKTOWE (dla pierwszej pochodnej)
+
+   a) Roznica progresywna (forward difference):
+      f'(x) ≈ (f(x+h) - f(x)) / h
+      Blad obciecia: O(h) - rzad PIERWSZY
+      Stosujemy na POCZATKU przedzialu (nie wymaga f(x-h))
+
+   b) Roznica wsteczna (backward difference):
+      f'(x) ≈ (f(x) - f(x-h)) / h
+      Blad obciecia: O(h) - rzad PIERWSZY
+      Stosujemy na KONCU przedzialu (nie wymaga f(x+h))
+
+4. PRZYBLIZENIA TRZYPUNKTOWE
+
+   a) Roznica centralna (dla pierwszej pochodnej):
+      f'(x) ≈ (f(x+h) - f(x-h)) / (2h)
+      Blad obciecia: O(h²) - rzad DRUGI
+      Stosujemy w SRODKU przedzialu (wymaga f(x-h) i f(x+h))
+
+   b) Roznica centralna drugiego rzedu (dla drugiej pochodnej):
+      f''(x) ≈ (f(x+h) - 2*f(x) + f(x-h)) / h²
+      Blad obciecia: O(h²) - rzad DRUGI
+
+5. WPLYW BLEDOW MASZYNOWYCH
+   - Dla DUZYCH h: dominuje blad obciecia (O(hⁿ))
+   - Dla MALYCH h: dominuje blad maszynowy (≈ ε_mach / h)
+
+   Istnieje optymalne h_opt, dla ktorego suma bledow jest minimalna.
+
+6. WERYFIKACJA RZEDU DOKLADNOSCI
+   Jesli blad = C * h^p, to:
+   log|blad| = log(C) + p * log(h)
+
+   Na wykresie log-log nachylenie prostej = rzad dokladnosci p
+
+*/
+
 #include <iostream>
 #include <iomanip>
 #include <cmath>
-#include <vector>
 #include <fstream>
 #include <string>
 
-// Szablon funkcji - funkcja testowa
+using namespace std;
+
+// Badana funkcja: f(x) = cos(x)
 template <typename T>
-T test_function(T x) {
-    return std::cos(x);
+T funkcja(T x) {
+    return cos(x);
 }
 
-// Dokładna pochodna funkcji testowej
+// Dokladna pierwsza pochodna: f'(x) = -sin(x)
 template <typename T>
-T exact_derivative(T x) {
-    return -std::sin(x);
+T pochodna1Dokladna(T x) {
+    return -sin(x);
 }
 
-// Dwupunktowe przybliżenie do przodu (forward difference) - O(h)
+// Dokladna druga pochodna: f''(x) = -cos(x)
 template <typename T>
-T forward_diff_2pt(T (*f)(T), T x, T h) {
-    return (f(x + h) - f(x)) / h;
+T pochodna2Dokladna(T x) {
+    return -cos(x);
 }
 
-// Dwupunktowe przybliżenie do tyłu (backward difference) - O(h)
+// Roznica progresywna: f'(x) ≈ (f(x+h) - f(x)) / h
 template <typename T>
-T backward_diff_2pt(T (*f)(T), T x, T h) {
-    return (f(x) - f(x - h)) / h;
+T roznicaProgresywna(T x, T h) {
+    return (funkcja(x + h) - funkcja(x)) / h;
 }
 
-// Trzypunktowe przybliżenie centralne - O(h^2)
+// Roznica wsteczna: f'(x) ≈ (f(x) - f(x-h)) / h
 template <typename T>
-T central_diff_3pt(T (*f)(T), T x, T h) {
-    return (f(x + h) - f(x - h)) / (2 * h);
+T roznicaWsteczna(T x, T h) {
+    return (funkcja(x) - funkcja(x - h)) / h;
 }
 
-// Trzypunktowe przybliżenie jednostronne na brzegu początkowym - O(h^2)
+// Roznica centralna (pierwsza pochodna): f'(x) ≈ (f(x+h) - f(x-h)) / (2h)
 template <typename T>
-T forward_diff_3pt(T (*f)(T), T x, T h) {
-    return (-3 * f(x) / 2 + 2 * f(x + h) - f(x + 2*h) / 2) / h;
+T roznicaCentralna(T x, T h) {
+    return (funkcja(x + h) - funkcja(x - h)) / (2 * h);
 }
 
-// Trzypunktowe przybliżenie jednostronne na brzegu końcowym - O(h^2)
+// Roznica centralna drugiego rzedu (druga pochodna): f''(x) ≈ (f(x+h) - 2*f(x) + f(x-h)) / h²
 template <typename T>
-T backward_diff_3pt(T (*f)(T), T x, T h) {
-    return (3 * f(x) / 2 - 2 * f(x - h) + f(x - 2*h) / 2) / h;
+T roznicaCentralna2Pochodna(T x, T h) {
+    return (funkcja(x + h) - 2 * funkcja(x) + funkcja(x - h)) / (h * h);
 }
 
-// Pięciopunktowe przybliżenie centralne - O(h^4)
+/*
+FUNKCJE OBLICZAJACE BLEDY DLA ROZNYCH PUNKTOW
+*/
+
+// POCZATEK PRZEDZIALU (x = 0) - tylko progresywna
 template <typename T>
-T central_diff_5pt(T (*f)(T), T x, T h) {
-    return (f(x - 2*h) / 12 - 2 * f(x - h) / 3 + 2 * f(x + h) / 3 - f(x + 2*h) / 12) / h;
-}
+void obliczBledyPoczatek(T x, const string& nazwaTypu, ofstream& plik) {
+    cout << "\n========================================" << endl;
+    cout << "Punkt: x = 0 (POCZATEK przedzialu)" << endl;
+    cout << "Typ zmiennej: " << nazwaTypu << endl;
+    cout << "Metody: PROGRESYWNA" << endl;
+    cout << "========================================" << endl;
 
-// Struktura przechowująca wyniki dla danego kroku h
-template <typename T>
-struct Results {
-    T h;
-    T x;
-    T exact;
-    T forward_2pt;
-    T backward_2pt;
-    T central_3pt;
-    T forward_3pt;
-    T backward_3pt;
-    T central_5pt;
-    T error_forward_2pt;
-    T error_backward_2pt;
-    T error_central_3pt;
-    T error_forward_3pt;
-    T error_backward_3pt;
-    T error_central_5pt;
-};
+    T dokladna1 = pochodna1Dokladna(x);
+    cout << "Wartosc dokladna f'(0) = " << scientific << setprecision(10) << (double)dokladna1 << endl;
 
-// Funkcja obliczająca wszystkie przybliżenia dla danego punktu
-template <typename T>
-Results<T> compute_derivatives(T (*f)(T), T x, T h, bool use_forward_3pt, bool use_backward_3pt, bool use_5pt) {
-    Results<T> res;
-    res.h = h;
-    res.x = x;
-    res.exact = exact_derivative(x);
+    cout << "\n" << setw(10) << "log10(h)"
+         << setw(18) << "progresywna" << endl;
+    cout << string(28, '-') << endl;
 
-    // Przybliżenia dwupunktowe
-    res.forward_2pt = forward_diff_2pt(f, x, h);
-    res.backward_2pt = backward_diff_2pt(f, x, h);
-    res.central_3pt = central_diff_3pt(f, x, h);
+    for (int exp = -1; exp >= -15; exp--) {
+        T h = pow((T)10, exp);
 
-    // Przybliżenia trzypunktowe jednostronne
-    if (use_forward_3pt) {
-        res.forward_3pt = forward_diff_3pt(f, x, h);
-    } else {
-        res.forward_3pt = 0;
+        T blad_prog = fabs(roznicaProgresywna(x, h) - dokladna1);
+
+        double log_blad_prog = (blad_prog > 0) ? log10((double)blad_prog) : -20;
+
+        cout << setw(10) << fixed << setprecision(0) << exp
+             << setw(18) << fixed << setprecision(6) << log_blad_prog << endl;
+
+        plik << log10((double)h) << " "
+             << log_blad_prog << endl;
     }
-
-    if (use_backward_3pt) {
-        res.backward_3pt = backward_diff_3pt(f, x, h);
-    } else {
-        res.backward_3pt = 0;
-    }
-
-    // Przybliżenie pięciopunktowe
-    if (use_5pt) {
-        res.central_5pt = central_diff_5pt(f, x, h);
-    } else {
-        res.central_5pt = 0;
-    }
-
-    // Błędy bezwzględne
-    res.error_forward_2pt = std::abs(res.forward_2pt - res.exact);
-    res.error_backward_2pt = std::abs(res.backward_2pt - res.exact);
-    res.error_central_3pt = std::abs(res.central_3pt - res.exact);
-    res.error_forward_3pt = use_forward_3pt ? std::abs(res.forward_3pt - res.exact) : 0;
-    res.error_backward_3pt = use_backward_3pt ? std::abs(res.backward_3pt - res.exact) : 0;
-    res.error_central_5pt = use_5pt ? std::abs(res.central_5pt - res.exact) : 0;
-
-    return res;
+    plik << "\n\n";
 }
 
-// Funkcja generująca dane do wykresu
+// SRODEK PRZEDZIALU (x = pi/4) - wszystkie metody
 template <typename T>
-void generate_convergence_data(const std::string& filename_prefix) {
-    const T x_test = M_PI / 4; // Punkt testowy w środku przedziału
-    const T x_start = 0.0;     // Brzeg początkowy
-    const T x_end = M_PI / 2;  // Brzeg końcowy
+void obliczBledySrodek(T x, const string& nazwaTypu, ofstream& plik) {
+    cout << "\n========================================" << endl;
+    cout << "Punkt: x = pi/4 (SRODEK przedzialu)" << endl;
+    cout << "Typ zmiennej: " << nazwaTypu << endl;
+    cout << "Metody: WSZYSTKIE" << endl;
+    cout << "========================================" << endl;
 
-    std::vector<T> h_values;
+    T dokladna1 = pochodna1Dokladna(x);
+    T dokladna2 = pochodna2Dokladna(x);
+    cout << "Wartosc dokladna f'(pi/4) = " << scientific << setprecision(10) << (double)dokladna1 << endl;
+    cout << "Wartosc dokladna f''(pi/4) = " << scientific << setprecision(10) << (double)dokladna2 << endl;
 
-    // Generujemy wartości h od 1 do 10^-14
-    for (int exp = 0; exp >= -14; exp--) {
-        T h = std::pow(10.0, exp);
-        h_values.push_back(h);
+    cout << "\n" << setw(10) << "log10(h)"
+         << setw(18) << "progresywna"
+         << setw(18) << "wsteczna"
+         << setw(18) << "centralna"
+         << setw(18) << "centr.II rzad" << endl;
+    cout << string(82, '-') << endl;
+
+    for (int exp = -1; exp >= -15; exp--) {
+        T h = pow((T)10, exp);
+
+        T blad_prog = fabs(roznicaProgresywna(x, h) - dokladna1);
+        T blad_wst = fabs(roznicaWsteczna(x, h) - dokladna1);
+        T blad_centr = fabs(roznicaCentralna(x, h) - dokladna1);
+        T blad_centr2 = fabs(roznicaCentralna2Pochodna(x, h) - dokladna2);
+
+        double log_blad_prog = (blad_prog > 0) ? log10((double)blad_prog) : -20;
+        double log_blad_wst = (blad_wst > 0) ? log10((double)blad_wst) : -20;
+        double log_blad_centr = (blad_centr > 0) ? log10((double)blad_centr) : -20;
+        double log_blad_centr2 = (blad_centr2 > 0) ? log10((double)blad_centr2) : -20;
+
+        cout << setw(10) << fixed << setprecision(0) << exp
+             << setw(18) << fixed << setprecision(6) << log_blad_prog
+             << setw(18) << fixed << setprecision(6) << log_blad_wst
+             << setw(18) << fixed << setprecision(6) << log_blad_centr
+             << setw(18) << fixed << setprecision(6) << log_blad_centr2 << endl;
+
+        plik << log10((double)h) << " "
+             << log_blad_prog << " "
+             << log_blad_wst << " "
+             << log_blad_centr << " "
+             << log_blad_centr2 << endl;
     }
-
-    // Pliki wyjściowe
-    std::ofstream file_middle(filename_prefix + "_middle.dat");
-    std::ofstream file_start(filename_prefix + "_start.dat");
-    std::ofstream file_end(filename_prefix + "_end.dat");
-
-    file_middle << std::scientific << std::setprecision(16);
-    file_start << std::scientific << std::setprecision(16);
-    file_end << std::scientific << std::setprecision(16);
-
-    // Nagłówki
-    file_middle << "# log10(h) log10(error_forward_2pt) log10(error_backward_2pt) log10(error_central_3pt) log10(error_central_5pt)\n";
-    file_start << "# log10(h) log10(error_forward_2pt) log10(error_central_3pt) log10(error_forward_3pt)\n";
-    file_end << "# log10(h) log10(error_backward_2pt) log10(error_central_3pt) log10(error_backward_3pt)\n";
-
-    std::cout << "\n=== Analiza dla typu: " << (sizeof(T) == sizeof(double) ? "double" : "long double") << " ===\n\n";
-
-    // Punkt środkowy
-    std::cout << "Punkt środkowy (x = π/4):\n";
-    std::cout << std::setw(12) << "h"
-              << std::setw(15) << "Forward 2pt"
-              << std::setw(15) << "Backward 2pt"
-              << std::setw(15) << "Central 3pt"
-              << std::setw(15) << "Central 5pt" << "\n";
-    std::cout << std::string(72, '-') << "\n";
-
-    for (T h : h_values) {
-        Results<T> res = compute_derivatives(test_function<T>, x_test, h, false, false, h >= 2e-14);
-
-        if (res.error_forward_2pt > 0 && res.error_backward_2pt > 0 && res.error_central_3pt > 0) {
-            file_middle << std::log10(h) << " "
-                       << std::log10(res.error_forward_2pt) << " "
-                       << std::log10(res.error_backward_2pt) << " "
-                       << std::log10(res.error_central_3pt);
-
-            if (res.error_central_5pt > 0) {
-                file_middle << " " << std::log10(res.error_central_5pt);
-            }
-            file_middle << "\n";
-
-            std::cout << std::scientific << std::setprecision(4)
-                     << std::setw(12) << h
-                     << std::setw(15) << res.error_forward_2pt
-                     << std::setw(15) << res.error_backward_2pt
-                     << std::setw(15) << res.error_central_3pt
-                     << std::setw(15) << res.error_central_5pt << "\n";
-        }
-    }
-
-    // Brzeg początkowy
-    std::cout << "\nBrzeg początkowy (x = 0):\n";
-    std::cout << std::setw(12) << "h"
-              << std::setw(15) << "Forward 2pt"
-              << std::setw(15) << "Central 3pt"
-              << std::setw(15) << "Forward 3pt" << "\n";
-    std::cout << std::string(57, '-') << "\n";
-
-    for (T h : h_values) {
-        if (h < M_PI / 4) { // Upewniamy się, że mamy punkty w przedziale
-            Results<T> res = compute_derivatives(test_function<T>, x_start, h, true, false, false);
-
-            if (res.error_forward_2pt > 0 && res.error_central_3pt > 0 && res.error_forward_3pt > 0) {
-                file_start << std::log10(h) << " "
-                          << std::log10(res.error_forward_2pt) << " "
-                          << std::log10(res.error_central_3pt) << " "
-                          << std::log10(res.error_forward_3pt) << "\n";
-
-                std::cout << std::scientific << std::setprecision(4)
-                         << std::setw(12) << h
-                         << std::setw(15) << res.error_forward_2pt
-                         << std::setw(15) << res.error_central_3pt
-                         << std::setw(15) << res.error_forward_3pt << "\n";
-            }
-        }
-    }
-
-    // Brzeg końcowy
-    std::cout << "\nBrzeg końcowy (x = π/2):\n";
-    std::cout << std::setw(12) << "h"
-              << std::setw(15) << "Backward 2pt"
-              << std::setw(15) << "Central 3pt"
-              << std::setw(15) << "Backward 3pt" << "\n";
-    std::cout << std::string(57, '-') << "\n";
-
-    for (T h : h_values) {
-        if (h < M_PI / 4) {
-            Results<T> res = compute_derivatives(test_function<T>, x_end, h, false, true, false);
-
-            if (res.error_backward_2pt > 0 && res.error_central_3pt > 0 && res.error_backward_3pt > 0) {
-                file_end << std::log10(h) << " "
-                        << std::log10(res.error_backward_2pt) << " "
-                        << std::log10(res.error_central_3pt) << " "
-                        << std::log10(res.error_backward_3pt) << "\n";
-
-                std::cout << std::scientific << std::setprecision(4)
-                         << std::setw(12) << h
-                         << std::setw(15) << res.error_backward_2pt
-                         << std::setw(15) << res.error_central_3pt
-                         << std::setw(15) << res.error_backward_3pt << "\n";
-            }
-        }
-    }
-
-    file_middle.close();
-    file_start.close();
-    file_end.close();
+    plik << "\n\n";
 }
 
-// Funkcja wyznaczająca rząd dokładności
+// KONIEC PRZEDZIALU (x = pi/2) - tylko wsteczna
 template <typename T>
-void estimate_convergence_order() {
-    const T x_test = M_PI / 4;
+void obliczBledyKoniec(T x, const string& nazwaTypu, ofstream& plik) {
+    cout << "\n========================================" << endl;
+    cout << "Punkt: x = pi/2 (KONIEC przedzialu)" << endl;
+    cout << "Typ zmiennej: " << nazwaTypu << endl;
+    cout << "Metody: WSTECZNA" << endl;
+    cout << "========================================" << endl;
 
-    std::cout << "\n=== Wyznaczanie doświadczalnego rzędu dokładności ===\n\n";
+    T dokladna1 = pochodna1Dokladna(x);
+    cout << "Wartosc dokladna f'(pi/2) = " << scientific << setprecision(10) << (double)dokladna1 << endl;
 
-    T h1 = 0.1;
-    T h2 = 0.01;
+    cout << "\n" << setw(10) << "log10(h)"
+         << setw(18) << "wsteczna" << endl;
+    cout << string(28, '-') << endl;
 
-    Results<T> res1 = compute_derivatives(test_function<T>, x_test, h1, false, false, true);
-    Results<T> res2 = compute_derivatives(test_function<T>, x_test, h2, false, false, true);
+    for (int exp = -1; exp >= -15; exp--) {
+        T h = pow((T)10, exp);
 
-    auto calc_order = [](T e1, T e2, T h1, T h2) {
-        return (std::log10(e2) - std::log10(e1)) / (std::log10(h2) - std::log10(h1));
-    };
+        T blad_wst = fabs(roznicaWsteczna(x, h) - dokladna1);
 
-    std::cout << std::fixed << std::setprecision(4);
-    std::cout << "Metoda                   Rząd teoretyczny    Rząd doświadczalny\n";
-    std::cout << std::string(65, '-') << "\n";
+        double log_blad_wst = (blad_wst > 0) ? log10((double)blad_wst) : -20;
 
-    std::cout << "Forward 2pt              " << std::setw(8) << 1
-              << std::setw(24) << calc_order(res1.error_forward_2pt, res2.error_forward_2pt, h1, h2) << "\n";
+        cout << setw(10) << fixed << setprecision(0) << exp
+             << setw(18) << fixed << setprecision(6) << log_blad_wst << endl;
 
-    std::cout << "Backward 2pt             " << std::setw(8) << 1
-              << std::setw(24) << calc_order(res1.error_backward_2pt, res2.error_backward_2pt, h1, h2) << "\n";
-
-    std::cout << "Central 3pt              " << std::setw(8) << 2
-              << std::setw(24) << calc_order(res1.error_central_3pt, res2.error_central_3pt, h1, h2) << "\n";
-
-    std::cout << "Central 5pt              " << std::setw(8) << 4
-              << std::setw(24) << calc_order(res1.error_central_5pt, res2.error_central_5pt, h1, h2) << "\n";
+        plik << log10((double)h) << " "
+             << log_blad_wst << endl;
+    }
+    plik << "\n\n";
 }
+
 
 int main() {
-    std::cout << "=================================================================\n";
-    std::cout << "  Analiza przybliżeń różnicowych pierwszej pochodnej\n";
-    std::cout << "  Funkcja: f(x) = cos(x), f'(x) = -sin(x)\n";
-    std::cout << "  Przedział: [0, π/2]\n";
-    std::cout << "=================================================================\n";
+    cout << "   PRZYBLIZENIA ROZNICOWE DLA POCHODNYCH" << endl;
+    cout << "   Funkcja: f(x) = cos(x), przedzial [0, pi/2]" << endl;
 
-    // Analiza dla typu double
-    std::cout << "\n*** TYP: DOUBLE ***\n";
-    generate_convergence_data<double>("convergence_double");
-    estimate_convergence_order<double>();
+    double x_start = 0.0;
+    double x_middle = M_PI / 4.0;
+    double x_end = M_PI / 2.0;
 
-    // Analiza dla typu long double
-    std::cout << "\n\n*** TYP: LONG DOUBLE ***\n";
-    generate_convergence_data<long double>("convergence_long_double");
-    estimate_convergence_order<long double>();
+    long double x_start_ld = 0.0L;
+    long double x_middle_ld = M_PI / 4.0L;
+    long double x_end_ld = M_PI / 2.0L;
 
-    std::cout << "\n=================================================================\n";
-    std::cout << "Dane zapisane do plików:\n";
-    std::cout << "  - convergence_double_*.dat\n";
-    std::cout << "  - convergence_long_double_*.dat\n";
-    std::cout << "\nWygeneruj wykresy używając skryptu gnuplot: plot_convergence.gnu\n";
-    std::cout << "=================================================================\n";
+    cout << "\nPunkty badania:" << endl;
+    cout << "  x = 0 (poczatek) -> progresywna" << endl;
+    cout << "  x = pi/4 (srodek) -> wszystkie metody" << endl;
+    cout << "  x = pi/2 (koniec) -> wsteczna" << endl;
+
+    // OBLICZENIA DLA TYPU DOUBLE
+    cout << "\n============== TYP: DOUBLE ==============" << endl;
+
+    ofstream plik_double_start("bledy_double_start.dat");
+    ofstream plik_double_middle("bledy_double_middle.dat");
+    ofstream plik_double_end("bledy_double_end.dat");
+
+    plik_double_start << "# log10(h)  log10(blad_prog)" << endl;
+    plik_double_middle << "# log10(h)  log10(blad_prog)  log10(blad_wst)  log10(blad_centr)  log10(blad_centr2)" << endl;
+    plik_double_end << "# log10(h)  log10(blad_wst)" << endl;
+
+    obliczBledyPoczatek<double>(x_start, "double", plik_double_start);
+    obliczBledySrodek<double>(x_middle, "double", plik_double_middle);
+    obliczBledyKoniec<double>(x_end, "double", plik_double_end);
+
+    plik_double_start.close();
+    plik_double_middle.close();
+    plik_double_end.close();
+
+    // OBLICZENIA DLA TYPU LONG DOUBLE
+    cout << "\n============ TYP: LONG DOUBLE ============" << endl;
+
+    ofstream plik_ld_start("bledy_long_double_start.dat");
+    ofstream plik_ld_middle("bledy_long_double_middle.dat");
+    ofstream plik_ld_end("bledy_long_double_end.dat");
+
+    plik_ld_start << "# log10(h)  log10(blad_prog)" << endl;
+    plik_ld_middle << "# log10(h)  log10(blad_prog)  log10(blad_wst)  log10(blad_centr)  log10(blad_centr2)" << endl;
+    plik_ld_end << "# log10(h)  log10(blad_wst)" << endl;
+
+    obliczBledyPoczatek<long double>(x_start_ld, "long double", plik_ld_start);
+    obliczBledySrodek<long double>(x_middle_ld, "long double", plik_ld_middle);
+    obliczBledyKoniec<long double>(x_end_ld, "long double", plik_ld_end);
+
+    plik_ld_start.close();
+    plik_ld_middle.close();
+    plik_ld_end.close();
+
+    // PODSUMOWANIE
+    cout << "\n========================================" << endl;
+    cout << "PODSUMOWANIE" << endl;
+    cout << "========================================" << endl;
+
+    cout << "\n1. TEORETYCZNE RZEDY DOKLADNOSCI:" << endl;
+    cout << "   - Progresywna (2-pkt):        O(h)  - rzad 1" << endl;
+    cout << "   - Wsteczna (2-pkt):           O(h)  - rzad 1" << endl;
+    cout << "   - Centralna (3-pkt):          O(h^2) - rzad 2" << endl;
+    cout << "   - Centralna II rzad (3-pkt):  O(h^2) - rzad 2" << endl;
+
+    cout << "\n2. ZASTOSOWANIE METOD:" << endl;
+    cout << "   - Poczatek (x=0):   progresywna" << endl;
+    cout << "   - Srodek (x=pi/4):  wszystkie metody" << endl;
+    cout << "   - Koniec (x=pi/2):  wsteczna" << endl;
+
+    cout << "\nDane zapisane do plikow:" << endl;
+    cout << "  bledy_double_start.dat, bledy_double_middle.dat, bledy_double_end.dat" << endl;
+    cout << "  bledy_long_double_start.dat, bledy_long_double_middle.dat, bledy_long_double_end.dat" << endl;
 
     return 0;
 }

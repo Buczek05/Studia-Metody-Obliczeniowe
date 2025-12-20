@@ -19,19 +19,8 @@ example_solver: example_solver.cpp thomas_solver.h
 least_squares: least_squares.cpp
 	$(CXX) $(CXXFLAGS) -o least_squares least_squares.cpp
 
-# Uruchomienie wszystkich programów
-run: all
-	@echo "=== Algorytm Thomasa ==="
-	./thomas
-	@echo ""
-	@echo "=== Przykład z klasą ThomasSolver ==="
-	./example_solver
-	@echo ""
-	@echo "=== Metoda najmniejszych kwadratów ==="
-	./least_squares
-
 # Uruchomienie tylko algorytmu Thomasa
-run-thomas: thomas
+run: thomas
 	./thomas
 
 # Uruchomienie tylko przykładu z klasą

@@ -31,7 +31,7 @@ void picard(double (*g)(double), double (*f)(double), double x0) {
 
         cout << setw(4) << i << setw(18) << x_new << setw(18) << fx << setw(18) << err << "\n";
 
-        if(err < EPS || fabs(fx) < DELTA) {
+        if(err < EPS && fabs(fx) < DELTA) {
             cout << "Wynik: " << x_new << " (iteracji: " << i+1 << ")\n";
             return;
         }
@@ -58,7 +58,7 @@ void bisection(double (*f)(double), double a, double b) {
 
         cout << setw(4) << i << setw(18) << c << setw(18) << fc << setw(18) << fabs(c-prev) << "\n";
 
-        if(fabs(fc) < DELTA || fabs(b-a) < EPS) {
+        if(fabs(fc) < DELTA && fabs(b-a)/2 < EPS) {
             cout << "Wynik: " << c << " (iteracji: " << i+1 << ")\n";
             return;
         }

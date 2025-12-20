@@ -23,7 +23,11 @@ run: $(TARGET)
 analysis: $(ANALYSIS)
 	./$(ANALYSIS)
 
-plot: run
+plot:
+	@if [ ! -f bledy_double_middle.dat ]; then \
+		echo "BŁĄD: Brak plików z danymi. Najpierw uruchom 'make run'."; \
+		exit 1; \
+	fi
 	@if command -v gnuplot >/dev/null 2>&1; then \
 		gnuplot plot_convergence.gnu; \
 		echo "Wykresy wygenerowane pomyślnie!"; \

@@ -145,17 +145,6 @@ void luDecomposition(vector<vector<double>>& A, vector<int>& perm) {
     }
 }
 
-/**
- * Procedura 2: Rozwiązywanie układu równań Ax = b
- *
- * Wykorzystuje wynik dekompozycji LU z procedury 1
- * Operuje wyłącznie na wektorze b
- *
- * Na wejściu: A - macierz po dekompozycji LU
- *             b - wektor prawej strony
- *             perm - wektor permutacji z procedury 1
- * Na wyjściu: x - rozwiązanie układu
- */
 vector<double> solveLU(const vector<vector<double>>& A, vector<double> b, const vector<int>& perm) {
     int n = A.size();
     vector<double> x(n);
@@ -232,12 +221,7 @@ vector<double> multiplyMatrixVector(const vector<vector<double>>& A, const vecto
 }
 
 int main() {
-    cout << "=================================================\n";
-    cout << "   Zajęcia nr 5: Dekompozycja LU z wyborem\n";
-    cout << "   elementu podstawowego\n";
-    cout << "=================================================\n";
-
-    // Dane z zadania programowego
+    // Dane z zadania
     vector<vector<double>> A = {
         {5,  4,  3,  2,  1},
         {10, 8,  7,  6,  5},
